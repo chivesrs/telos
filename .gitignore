@@ -1,3 +1,4 @@
 .idea/
+pkg/
 server.crt
 server.key
