@@ -23,7 +23,10 @@ var t *template.Template
 func main() {
 	flag.Parse()
 	if *certFile == "" || *keyFile == "" {
-		log.Fatalf("Both --cert_file and --key_file must be set")
+		log.Fatal("Both --cert_file and --key_file must be set")
+	}
+	if *templateFile == "" {
+		log.Fatal("--template_file must be set")
 	}
 	t = template.Must(template.ParseFiles(*templateFile))
 
