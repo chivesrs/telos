@@ -20,6 +20,12 @@ var (
 
 var t *template.Template
 
+// Parameters are the parameters used to render the HTML template.
+type Parameters struct {
+	Rate  int64
+	Error error
+}
+
 func main() {
 	flag.Parse()
 	if *certFile == "" || *keyFile == "" {
@@ -55,22 +61,38 @@ func handler(w http.ResponseWriter, req *http.Request) {
 func handleForm(values url.Values, w http.ResponseWriter) {
 	enrage, err := strconv.ParseInt(values.Get("enrage"), 10, 64)
 	if err != nil {
+		params := Parameters{
+			Error: fmt.Errorf("unable to parse enrage: %v", err),
+		}
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf("Unable to parse enrage: %v", err)))
+		t.Execute(w, params)
 		return
 	}
+
 	streak, err := strconv.ParseInt(values.Get("streak"), 10, 64)
 	if err != nil {
+		params := Parameters{
+			Error: fmt.Errorf("unable to parse streak: %v", err),
+		}
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf("Unable to parse streak: %v", err)))
+		t.Execute(w, params)
 		return
 	}
+
 	lotd := values.Get("lotd") == "on"
 	rate, err := droprate.DropRate(enrage, streak, lotd)
 	if err != nil {
+		params := Parameters{
+			Error: fmt.Errorf("unable to calculate drop rate: %v", err),
+		}
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf("Unable to calculate drop rate: %v", err)))
+		t.Execute(w, params)
 		return
 	}
-	t.Execute(w, rate)
+
+	params := Parameters{
+		Rate: rate,
+	}
+	w.WriteHeader(http.StatusOK)
+	t.Execute(w, params)
 }

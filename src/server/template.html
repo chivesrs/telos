@@ -12,7 +12,7 @@
     <br>
     <input type="submit" name="submit" title="Calculate" value="Calculate">
 </form>
-{{if .}} Drop rate is 1 / {{.}}. {{end}}
+{{if .Error}}Error: {{.Error}}{{else if .Rate}}Drop rate is 1 / {{.Rate}}.{{end}}
 </body>
 <head>
 </html>
