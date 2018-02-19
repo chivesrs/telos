@@ -13,10 +13,9 @@ import (
 )
 
 var (
-	certFile      = flag.String("cert_file", "", "Full path to cert.pem")
-	keyFile       = flag.String("key_file", "", "Full path to privkey.pem")
-	templateFile  = flag.String("template_file", "", "Full path to template.html")
-	handlePattern = flag.String("handle_pattern", "/", "Pattern for http.HandleFunc")
+	certFile     = flag.String("cert_file", "", "Full path to cert.pem")
+	keyFile      = flag.String("key_file", "", "Full path to privkey.pem")
+	templateFile = flag.String("template_file", "", "Full path to template.html")
 )
 
 var t *template.Template
@@ -37,7 +36,7 @@ func main() {
 	}
 	t = template.Must(template.ParseFiles(*templateFile))
 
-	http.HandleFunc(*handlePattern, handler)
+	http.HandleFunc("/", handler)
 	err := http.ListenAndServeTLS(":8080", *certFile, *keyFile, nil)
 	log.Fatalf("Unable to listen: %v\n", err)
 }
